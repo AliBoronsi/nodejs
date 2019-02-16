@@ -1,13 +1,405 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-  <title>Express</title>
-  <link rel="stylesheet" href="/stylesheets/style.css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>جدول مسابقات PES</title>
+  <meta name="description" content="جدول مسابقات PES">
+
+  <link rel="stylesheet" href="/public/stylesheets/bootstrap.min.css" />
+  <link rel="stylesheet" href="/public/stylesheets/style.css" />
+
+  <script src="/public/javascripts/jquery.min.js"></script>
 </head>
 
 <body>
-  <h1>Express</h1>
-  <p>Welcome to MyApp </p>
+
+  <div class="row" style="direction: rtl">
+    <div class="col-xs-4 form-group">
+      <button class="btn btn-success" onclick="newTable()">جدول جدید</button>
+    </div>
+    <div class="col-xs-8 form-group">
+      <select id="recordName" class="form-control">
+      </select>
+    </div>
+  </div>
+
+  <h1 class="text-center">Pes ScoreBoard</h1>
+  <h2 class="text-center" id="tableName">جدول </h2>
+
+  <div class="alert alert-info">
+    <div class="row" style="direction: rtl">
+      <div class="col-xs-3 form-group">
+        <select id="player1" class="form-control">
+          <option value="ali"> علی </option>
+          <option value="vahid"> وحید </option>
+          <option value="hojat"> حجت </option>
+        </select>
+      </div>
+      <div class="col-xs-2">
+        <input type="number" id="goal1" class="form-control text-center" />
+      </div>
+      <div class="col-xs-2 text-center">
+        <span style="font-size: x-large;color:black"> VS </span>
+      </div>
+      <div class="col-xs-2">
+        <input type="number" id="goal2" class="form-control" />
+
+      </div>
+      <div class="col-xs-3">
+        <select id="player2" class="form-control">
+          <option value="ali"> علی </option>
+          <option value="vahid"> وحید </option>
+          <option value="hojat"> حجت </option>
+        </select>
+      </div>
+    </div>
+    <div class="row text-center">
+      <button class="btn btn-success" onclick="register();">ثبت</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <table class="table table-bordered" dir="rtl" id="table">
+      <thead>
+        <tr>
+          <th class="text-center"> بازیکن </th>
+          <th class="text-center"> بازی </th>
+          <th class="text-center"> امتیاز </th>
+          <th class="text-center"> برد </th>
+          <th class="text-center"> مساوی </th>
+          <th class="text-center"> باخت </th>
+          <th class="text-center"> گل زده </th>
+          <th class="text-center"> گل خورده </th>
+          <th class="text-center"> تفاضل گل </th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="row alert-alert-success text-center" style="margin: 0 auto;width: 50%;">
+    <h3>بازی ها </h3>
+    <table class="table table-bordered" dir="rtl" id="games">
+      <thead>
+        <tr>
+          <th class="text-center"> بازی </th>
+          <th class="text-center"> </th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
 </body>
+
+<script>
+
+  // [{name,[id,p1,g1,p2,g2]}] ==> its model
+  var recordName = "";
+  var key = '$2a$10$cM1fnGXvCyWS/fmQwOtkDudh4l48d6B1dn.MgzcXWLgu.u7FV0uTm';
+  var binID = '5c655c6b1198012fc898dbfd';
+  var games = {};
+  $(document).ready(function () {
+    GetAllFromServer();
+  });
+
+  function GetAllFromServer() {
+    $.ajax({
+      url: 'https://api.jsonbin.io/b/' + binID,
+      method: "get",
+      headers: {
+        'Content-Type': 'application/json',
+        'secret-key': key,
+        'versioning': false,
+      },
+      data: {},
+      success: function (response) {
+        games = response;
+        fillTableList();
+      },
+      error: function (data) {
+        alert(data);
+      }
+    })
+  }
+
+  function SyncWithServer() {
+    $.ajax({
+      url: 'https://api.jsonbin.io/b/' + binID,
+      method: "put",
+      headers: {
+        'Content-Type': 'application/json',
+        'secret-key': key,
+        'versioning': false
+      },
+      data: JSON.stringify(games),
+      success: function (response) {
+        updateTable();
+        updateGameTable();
+        alert('به روز شد');
+      },
+      error: function (data) {
+        alert(data);
+      }
+    })
+  }
+
+  function register() {
+    if ($('#player1').val() == $('#player2').val()) {
+      alert('درست وارد کن!');
+      return;
+    }
+
+    var maxId = games[recordName].length == 0 ? 1 : Math.max.apply(Math, games[recordName].map(function (i) { return i.id; })) + 1;
+    var game = {
+      id: maxId,
+      p1: $('#player1').val(),
+      g1: parseInt($('#goal1').val()),
+      p2: $('#player2').val(),
+      g2: parseInt($('#goal2').val()),
+    };
+
+    games[recordName].push(game);
+    SyncWithServer();
+  }
+
+  function updateTable() {
+    var ali = {
+      name: 'علی',
+      game: 0,
+      score: 0,
+      w: 0,
+      d: 0,
+      l: 0,
+      zade: 0,
+      khorde: 0,
+    };
+    games[recordName].forEach(function (item, i) {
+      if (item.p1 == 'ali') { // ali
+        ali.zade += item.g1;
+        ali.khorde += item.g2;
+        ali.game++;
+        if (item.g1 > item.g2) { // win
+          ali.score += 3;
+          ali.w++;
+        }
+        if (item.g1 == item.g2) { // draw
+          ali.score += 1;
+          ali.d++;
+        }
+        if (item.g1 < item.g2) { // lose
+          ali.score += 0;
+          ali.l++;
+        }
+      }
+      if (item.p2 == 'ali') { // ali
+        ali.zade += item.g2;
+        ali.khorde += item.g1;
+        ali.game++;
+        if (item.g2 > item.g1) { // win
+          ali.score += 3;
+          ali.w++;
+        }
+        if (item.g2 == item.g1) { // draw
+          ali.score += 1;
+          ali.d++;
+        }
+        if (item.g2 < item.g1) { // lose
+          ali.score += 0;
+          ali.l++;
+        }
+      }
+    });
+
+
+    var vahid = {
+      name: 'وحید',
+      game: 0,
+      score: 0,
+      w: 0,
+      d: 0,
+      l: 0,
+      zade: 0,
+      khorde: 0,
+    };
+    games[recordName].forEach(function (item, i) {
+      if (item.p1 == 'vahid') { // vahid
+        vahid.zade += item.g1;
+        vahid.khorde += item.g2;
+        vahid.game++;
+        if (item.g1 > item.g2) { // win
+          vahid.score += 3;
+          vahid.w++;
+        }
+        if (item.g1 == item.g2) { // draw
+          vahid.score += 1;
+          vahid.d++;
+        }
+        if (item.g1 < item.g2) { // lose
+          vahid.score += 0;
+          vahid.l++;
+        }
+      }
+      if (item.p2 == 'vahid') { // vahid
+        vahid.zade += item.g2;
+        vahid.khorde += item.g1;
+        vahid.game++;
+        if (item.g2 > item.g1) { // win
+          vahid.score += 3;
+          vahid.w++;
+        }
+        if (item.g2 == item.g1) { // draw
+          vahid.score += 1;
+          vahid.d++;
+        }
+        if (item.g2 < item.g1) { // lose
+          vahid.score += 0;
+          vahid.l++;
+        }
+      }
+    });
+
+
+    var hojat = {
+      name: 'حجت',
+      game: 0,
+      score: 0,
+      w: 0,
+      d: 0,
+      l: 0,
+      zade: 0,
+      khorde: 0,
+    };
+    games[recordName].forEach(function (item, i) {
+      if (item.p1 == 'hojat') { // hojat
+        hojat.zade += item.g1;
+        hojat.khorde += item.g2;
+        hojat.game++;
+        if (item.g1 > item.g2) { // win
+          hojat.score += 3;
+          hojat.w++;
+        }
+        if (item.g1 == item.g2) { // draw
+          hojat.score += 1;
+          hojat.d++;
+        }
+        if (item.g1 < item.g2) { // lose
+          hojat.score += 0;
+          hojat.l++;
+        }
+      }
+      if (item.p2 == 'hojat') { // hojat
+        hojat.zade += item.g2;
+        hojat.khorde += item.g1;
+        hojat.game++;
+        if (item.g2 > item.g1) { // win
+          hojat.score += 3;
+          hojat.w++;
+        }
+        if (item.g2 == item.g1) { // draw
+          hojat.score += 1;
+          hojat.d++;
+        }
+        if (item.g2 < item.g1) { // lose
+          hojat.score += 0;
+          hojat.l++;
+        }
+      }
+    });
+
+    var result = [ali, vahid, hojat];
+    result.sort(function (a, b) { // sort desc
+      if (b.score - a.score != 0) return b.score - a.score;
+      if ((b.zade - b.khorde) - (a.zade - a.khorde) != 0) return (b.zade - b.khorde) - (a.zade - a.khorde);
+      return b.zade - a.zade;
+    });
+
+    $('#table tbody').html('');
+    var rowsHTML = '';
+    result.forEach(function (item, i) {
+      rowsHTML += `
+                            <tr>
+                                <td class="text-center"> ${item.name} </td>
+                                <td class="text-center"> ${item.game} </td>
+                                <td class="text-center"> ${item.score} </td>
+                                <td class="text-center"> ${item.w} </td>
+                                <td class="text-center"> ${item.d} </td>
+                                <td class="text-center"> ${item.l} </td>
+                                <td class="text-center"> ${item.zade} </td>
+                                <td class="text-center"> ${item.khorde} </td>
+                                <td class="text-center"> ${item.zade - item.khorde} </td>
+                            </tr>
+                            `;
+    });
+    $('#table tbody').html(rowsHTML);
+
+
+  }
+
+
+  function updateGameTable() {
+    $('#games tbody').html('');
+    var rowsHTML = '';
+    for (var i = games[recordName].length - 1; i >= 0; i--) {
+      var item = games[recordName][i];
+      rowsHTML += `
+                            <tr>
+                                <td class="text-center"> ${translate(item.p1)}  ${item.g1} - ${item.g2}  ${translate(item.p2)} </td>
+                                <td class="text-center"> <button class="btn btn-danger" onclick="removeGame(${item.id})">حذف</button>  </td>
+                            </tr>
+                            `;
+    }
+    $('#games tbody').html(rowsHTML);
+    $('#games th:eq(1)').html(games[recordName].length);
+  }
+
+  function fillTableList() {
+    var html = '';
+    for (var i = Object.keys(games).length - 1; i >= 0; i--) {
+      var item = Object.keys(games)[i];
+      html += `<option value="${item}">جدول ${item}</option>`;
+    }
+    $('#recordName').html(html);
+
+    $('#recordName').val(Object.keys(games).length).trigger('change');
+  }
+
+  $('#recordName').change(function () {
+    recordName = $('#recordName').val().toString();
+    updateTable();
+    updateGameTable();
+    $('#tableName').text('جدول ' + recordName);
+  });
+
+  function removeGame(id) {
+    if (confirm('مطمئنی؟؟')) {
+      games[recordName] = games[recordName].filter(function (item) {
+        return item.id !== id;
+      });
+      SyncWithServer();
+    }
+  }
+
+  function newTable() {
+    let index = Object.keys(games).length + 1;
+    games[index.toString()] = [];
+    recordName = index.toString();
+    updateTable();
+    updateGameTable();
+    alert('جدول جدید ایجاد شد');
+  }
+
+  function translate(name) {
+    if (name == "ali") return "علی";
+    if (name == "vahid") return "وحید";
+    if (name == "hojat") return "حجت";
+  }
+
+</script>
 
 </html>
