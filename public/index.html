@@ -101,8 +101,6 @@
 
   // [{name,[id,p1,g1,p2,g2]}] ==> its model
   var recordName = "";
-  var key = '$2a$10$cM1fnGXvCyWS/fmQwOtkDudh4l48d6B1dn.MgzcXWLgu.u7FV0uTm';
-  var binID = '5c655c6b1198012fc898dbfd';
   var games = {};
   $(document).ready(function () {
     GetAllFromServer();
@@ -110,43 +108,23 @@
 
   function GetAllFromServer() {
     $.ajax({
-      url: 'https://api.jsonbin.io/b/' + binID,
+      url: '/games/getAll',
       method: "get",
       headers: {
-        'Content-Type': 'application/json',
-        'secret-key': key,
-        'versioning': false,
+        'Content-Type': 'application/json'
       },
       data: {},
       success: function (response) {
-        games = response;
-        fillTableList();
+        if (response.success) {
+          games = response.data;
+          fillTableList();
+        }
+        else alert(response.message);
       },
       error: function (data) {
         alert(data);
       }
-    })
-  }
-
-  function SyncWithServer() {
-    $.ajax({
-      url: 'https://api.jsonbin.io/b/' + binID,
-      method: "put",
-      headers: {
-        'Content-Type': 'application/json',
-        'secret-key': key,
-        'versioning': false
-      },
-      data: JSON.stringify(games),
-      success: function (response) {
-        updateTable();
-        updateGameTable();
-        alert('به روز شد');
-      },
-      error: function (data) {
-        alert(data);
-      }
-    })
+    });
   }
 
   function register() {
@@ -155,17 +133,36 @@
       return;
     }
 
-    var maxId = games[recordName].length == 0 ? 1 : Math.max.apply(Math, games[recordName].map(function (i) { return i.id; })) + 1;
     var game = {
-      id: maxId,
       p1: $('#player1').val(),
       g1: parseInt($('#goal1').val()),
       p2: $('#player2').val(),
       g2: parseInt($('#goal2').val()),
     };
 
-    games[recordName].push(game);
-    SyncWithServer();
+    $.ajax({
+      url: '/games/new',
+      method: "post",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify({
+        game: game,
+        recordName: recordName
+      }),
+      success: function (response) {
+        if (response.success) {
+          games[recordName].push(response.data);
+          updateTable();
+          updateGameTable();
+          alert(response.message);
+        }
+        else alert(response.message);
+      },
+      error: function (data) {
+        alert(data);
+      }
+    });
   }
 
   function updateTable() {
@@ -378,20 +375,52 @@
 
   function removeGame(id) {
     if (confirm('مطمئنی؟؟')) {
-      games[recordName] = games[recordName].filter(function (item) {
-        return item.id !== id;
+      $.ajax({
+        url: '/games/remove',
+        method: "post",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: JSON.stringify({
+          id: id,
+          recordName: recordName
+        }),
+        success: function (response) {
+          if (response.success) {
+            games[recordName].splice(games[recordName].findIndex(e => e.id === id), 1);
+            updateTable();
+            updateGameTable();
+            alert(response.message);
+          }
+          else alert(response.message);
+        },
+        error: function (data) {
+          alert(data);
+        }
       });
-      SyncWithServer();
     }
   }
 
   function newTable() {
-    let index = Object.keys(games).length + 1;
-    games[index.toString()] = [];
-    recordName = index.toString();
-    updateTable();
-    updateGameTable();
-    alert('جدول جدید ایجاد شد');
+    $.ajax({
+      url: '/games/newTable',
+      method: "post",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {},
+      success: function (response) {
+        if (response.success) {
+          games[response.data.toString()] = [];
+          fillTableList();
+          alert(response.message);
+        }
+        else alert(response.message);
+      },
+      error: function (data) {
+        alert(data);
+      }
+    });
   }
 
   function translate(name) {

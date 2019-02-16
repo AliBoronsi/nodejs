@@ -1,4 +1,4 @@
-export default class {
+class game{
     constructor(id, p1, g1, p2, g2) {
         this.id = id;
         this.p1 = p1;
@@ -6,9 +6,6 @@ export default class {
         this.p2 = p2;
         this.g2 = g2;
     }
-    id = 0;
-    p1 = '';
-    g1 = 0;
-    p2 = '';
-    g2 = 0;
 }
+
+module.exports = game;
