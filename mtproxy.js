@@ -1,6 +1,7 @@
 const version = '1.0.0';
 const author = 'FreedomPrevails';
 const github = 'https://github.com/FreedomPrevails/JSMTProxy';
+// "start": "pm2 start mtproxy.js -i max"
 
 const net = require('net');
 const crypto = require('crypto');
