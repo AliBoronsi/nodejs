@@ -24,6 +24,7 @@ for (let i = 0; i < telegram_servers.length; i++) {
     con_count.push(0);
 }
 
+console.log('port: ' + process.env.port);
 var configObj = {
     port: process.env.port,
     secret: "b0cbcef5a486d9636472ac27f8e11a9d"
