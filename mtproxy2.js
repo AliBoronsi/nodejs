@@ -24,11 +24,12 @@ for (let i = 0; i < telegram_servers.length; i++) {
     con_count.push(0);
 }
 
-console.log('port: ' + process.env.PORT);
 var configObj = {
-    port: process.env.PORT,
+    port: 3000,
     secret: "b0cbcef5a486d9636472ac27f8e11a9d"
 };
+
+console.log('port: ' + configObj.port);
 
 function reverseInplace(buffer) {
     for (var i = 0, j = buffer.length - 1; i < j; ++i, --j) {
@@ -115,24 +116,24 @@ function create_idle_server(id, ip) {
     });
 }
 
-setInterval(() => {
-    console.log('Connections per second:', Math.ceil((con_count[0] + con_count[1] + con_count[2] + con_count[3] + con_count[4]) / REPORT_CON_SEC), 'DC1:', Math.ceil(con_count[0] / REPORT_CON_SEC), 'DC2:', Math.ceil(con_count[1] / REPORT_CON_SEC), 'DC3:', Math.ceil(con_count[2] / REPORT_CON_SEC), 'DC4:', Math.ceil(con_count[3] / REPORT_CON_SEC), 'DC5:', Math.ceil(con_count[4] / REPORT_CON_SEC));
-    let n = 0;
-    for (let i = 0; i < telegram_servers.length; i++) {
-        n = Math.ceil(con_count[i] / REPORT_CON_SEC);
-        telegram_idle_num[i] = (n >= 4) ? n : 4;
-        con_count[i] = 0;
-    }
-}, REPORT_CON_SEC * 1000);
+// setInterval(() => {
+//     console.log('Connections per second:', Math.ceil((con_count[0] + con_count[1] + con_count[2] + con_count[3] + con_count[4]) / REPORT_CON_SEC), 'DC1:', Math.ceil(con_count[0] / REPORT_CON_SEC), 'DC2:', Math.ceil(con_count[1] / REPORT_CON_SEC), 'DC3:', Math.ceil(con_count[2] / REPORT_CON_SEC), 'DC4:', Math.ceil(con_count[3] / REPORT_CON_SEC), 'DC5:', Math.ceil(con_count[4] / REPORT_CON_SEC));
+//     let n = 0;
+//     for (let i = 0; i < telegram_servers.length; i++) {
+//         n = Math.ceil(con_count[i] / REPORT_CON_SEC);
+//         telegram_idle_num[i] = (n >= 4) ? n : 4;
+//         con_count[i] = 0;
+//     }
+// }, REPORT_CON_SEC * 1000);
 
-setInterval(() => {
-    let server_count = telegram_servers.length;
-    for (var i = 0; i < server_count; i++) {
-        if (server_idle_cons[i].length < telegram_idle_num[i]) {
-            create_idle_server(i, telegram_servers[i]);
-        }
-    }
-}, 20);
+// setInterval(() => {
+//     let server_count = telegram_servers.length;
+//     for (var i = 0; i < server_count; i++) {
+//         if (server_idle_cons[i].length < telegram_idle_num[i]) {
+//             create_idle_server(i, telegram_servers[i]);
+//         }
+//     }
+// }, 20);
 
 net.createServer(function (socket) {
 
@@ -153,7 +154,6 @@ net.createServer(function (socket) {
     });
 
     socket.on('data', function (data) {
-
         if (socket.init == null && (data.length == 41 || data.length == 56)) {
             let client_ip = socket.remoteAddress.substr(7, socket.remoteAddress.length);
             socket.destroy();

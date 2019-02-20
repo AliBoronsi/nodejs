@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node mtproxy2.js"
+    "start": "pm2 start mtproxy.js -i max"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
