@@ -30,7 +30,7 @@ for (let i = 0; i < telegram_servers.length; i++) {
 }
 
 var configObj = {
-    port: 443,
+    port: 6969,
     secret: "b0cbcef5a486d9636472ac27f8e11a9d"
 };
 
