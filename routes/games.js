@@ -2,7 +2,6 @@ var express = require('express');
 var fs = require('fs');
 var router = express.Router();
 const ResponseMaker = require('../Utils/ResponseMaker');
-const ResponseModel = require('../Model/ResponseModel');
 const GameModel = require('../Model/game');
 
 /* GET users listing. */
