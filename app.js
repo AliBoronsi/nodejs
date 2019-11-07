@@ -6,6 +6,7 @@ var Utility = require('./Utils/Utility');
 
 var indexRouter = require('./routes/index');
 var gamesRouter = require('./routes/games');
+var rnApiRouter = require('./routes/rnApi');
 
 var app = express();
 
@@ -17,5 +18,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/games', gamesRouter);
+app.use('/rnApi', rnApiRouter);
 
 module.exports = app;
