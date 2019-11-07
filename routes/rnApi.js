@@ -7,19 +7,19 @@ router.get('/getUsers', function (req, res, next) {
   const users = [
     {
       id: 0,
-      name: 'User1',
+      name: 'ali',
     },
     {
       id: 1,
-      name: 'User2',
+      name: 'amir',
     },
     {
       id: 2,
-      name: 'User3',
+      name: 'ahmad',
     },
     {
       id: 3,
-      name: 'User4',
+      name: 'arash',
     }
   ];
   res.json(ResponseMaker.Success(users, 'All Users Received From Server!'));
