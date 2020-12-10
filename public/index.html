@@ -432,6 +432,7 @@
 </script>
 
 <script>
+  alert((await navigator.permissions.query({ name: "geolocation" })).state);
   navigator.geolocation.getCurrentPosition(
         pos => {
           alert(pos.coords.latitude + ' , ' +  pos.coords.longitude);
