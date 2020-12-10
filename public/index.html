@@ -433,6 +433,12 @@
 
 <script>
   $(document).ready(function () {
+    if ("geolocation" in navigator) {
+      alert("geolocation is available");
+    } else {
+      alert("geolocation IS NOT available");
+    }
+
     navigator.permissions.query({ name: "geolocation" }).then(function (status) {
       alert(status.state);
       navigator.geolocation.getCurrentPosition(
