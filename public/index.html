@@ -432,16 +432,18 @@
 </script>
 
 <script>
-  alert((await navigator.permissions.query({ name: "geolocation" })).state);
-  navigator.geolocation.getCurrentPosition(
-        pos => {
-          alert(pos.coords.latitude + ' , ' +  pos.coords.longitude);
-        },
-        err => {
-          alert(err.code + ' : ' + err.message)
-        },
-        { timeout: 5000 }
-      );
+  $(document).ready(function () {
+    alert((await navigator.permissions.query({ name: "geolocation" })).state);
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        alert(pos.coords.latitude + ' , ' + pos.coords.longitude);
+      },
+      err => {
+        alert(err.code + ' : ' + err.message)
+      },
+      { timeout: 5000 }
+    );
+  });
 </script>
 
 </html>
