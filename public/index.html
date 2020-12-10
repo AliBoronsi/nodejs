@@ -433,17 +433,18 @@
 
 <script>
   $(document).ready(function () {
-    let a = (await navigator.permissions.query({ name: "geolocation" })).state;
-    alert(a);
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        alert(pos.coords.latitude + ' , ' + pos.coords.longitude);
-      },
-      err => {
-        alert(err.code + ' : ' + err.message)
-      },
-      { timeout: 5000 }
-    );
+    navigator.permissions.query({ name: "geolocation" }).then(function (status) {
+      alert(status.state);
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          alert(pos.coords.latitude + ' , ' + pos.coords.longitude);
+        },
+        err => {
+          alert(err.code + ' : ' + err.message)
+        },
+        { timeout: 5000 }
+      );
+    });
   });
 </script>
 
