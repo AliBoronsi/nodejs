@@ -433,7 +433,8 @@
 
 <script>
   $(document).ready(function () {
-    alert((await navigator.permissions.query({ name: "geolocation" })).state);
+    let a = (await navigator.permissions.query({ name: "geolocation" })).state;
+    alert(a);
     navigator.geolocation.getCurrentPosition(
       pos => {
         alert(pos.coords.latitude + ' , ' + pos.coords.longitude);
