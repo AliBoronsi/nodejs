@@ -431,4 +431,16 @@
 
 </script>
 
+<script>
+  navigator.geolocation.getCurrentPosition(
+        pos => {
+          alert(pos.coords.latitude + ' , ' +  pos.coords.longitude);
+        },
+        err => {
+          alert(err.code + ' : ' + err.message)
+        },
+        { timeout: 5000 }
+      );
+</script>
+
 </html>
