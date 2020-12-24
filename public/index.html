@@ -455,16 +455,16 @@
         if (navigator.permissions) {
             navigator.permissions.query({ name: 'geolocation' }).then(result => {
                 if (result.state === 'granted') {
-                    GetUserPosition();
+                    GetUserPosition('query-granted');
                 } else if (result.state === 'prompt') {
                     alert('لطفا GPS دستگاه را روشن کنید و مجوز دسترسی به لوکیشن را تایید نمایید');
-                    GetUserPosition();
+                    GetUserPosition('query-prompt');
                 } else if (result.state === 'denied') {
                     alert('شما مجوز دسترسی به لوکیشن را نداده اید \n لطفا از قسمت تنظیمات مرورگر این مجوز را بدهید و با GPS روشن دوباره امتحان کنید');
                 }
                 result.onchange = event => {
                     if (event.target.state === 'granted') {
-                        GetUserPosition();
+                        GetUserPosition('onchange');
                     } else if (event.target.state === 'denied') {
 
                     }
@@ -472,11 +472,11 @@
             });
         }
     }
-    function GetUserPosition() {
+    function GetUserPosition(from) {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function (position) {
-                    alert(position.coords.latitude + ' , ' +position.coords.longitude);
+                    alert(from + '\n' + position.coords.latitude + ' , ' +position.coords.longitude);
                 },
                 function (error) {
                     alert('خطا در پیدا کردن موقعیت فعلی شما \n لطفا از روشن بودن GPS دستگاه و مجوز دسترسی به لوکیشن در مرورگر مطمئن شوید و دوباره امتحان کنید');
