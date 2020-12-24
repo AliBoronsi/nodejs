@@ -109,6 +109,10 @@
       <a id="share_telegram" target="_blank" href="https://telegram.me/share/url?text=%D8%B9%D9%84%DB%8C%20%D8%A8%D8%B1%D9%88%D9%86%D8%B3%DB%8C%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%D8%B4%D9%85%D8%A7%20%D8%B1%D8%A7%20%D8%A8%D9%87%20%D8%A7%D8%B3%D8%AA%D9%81%D8%A7%D8%AF%D9%87%20%D8%A7%D8%B2%20%D8%A7%D9%BE%D9%84%DB%8C%DA%A9%DB%8C%D8%B4%D9%86%20%D8%A7%D9%81%D9%82%20%DA%A9%D9%88%D8%B1%D9%88%D8%B4%20%D8%A8%D8%A7%20%DA%A9%D8%AF%20%D8%B2%DB%8C%D8%B1%20%D8%AF%D8%B9%D9%88%D8%AA%20%D9%85%DB%8C%20%D9%86%D9%85%D8%A7%DB%8C%D8%AF%3A%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20OYBEWNPX%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%D9%84%D8%B7%D9%81%D8%A7%20%D8%AF%D8%B1%20%D9%82%D8%B3%D9%85%D8%AA%20%DA%A9%D8%AF%20%D8%AF%D8%B9%D9%88%D8%AA%20%DA%A9%D9%86%D9%86%D8%AF%D9%87%20%DA%A9%D8%AF%20%D9%81%D9%88%D9%82%20%D8%B1%D8%A7%20%D8%AF%D8%B1%D8%AC%20%D9%86%D9%85%D8%A7%DB%8C%DB%8C%D8%AF.%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%D8%A8%D8%B1%D8%A7%DB%8C%20%D9%86%D8%B5%D8%A8%20%D8%A7%D9%BE%D9%84%DB%8C%DA%A9%DB%8C%D8%B4%D9%86%20%D8%A7%D8%B2%20%D8%A2%D8%AF%D8%B1%D8%B3%20%D8%B0%DB%8C%D9%84%20%D8%A7%D8%B3%D8%AA%D9%81%D8%A7%D8%AF%D9%87%20%D9%86%D9%85%D8%A7%DB%8C%DB%8C%D8%AF.%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20https%3A%2F%2Fclub.okcs.com%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20"><img src="/Content/new-ui/img/telegram3.svg" alt="telegram"><span>تلگرام</span></a>
   </div>
   
+  <div class="row text-center">
+    <button class="btn btn-success" onclick="AroundUserBranches();">گرفتن موقعیت</button>
+  </div>
+  
 </body>
 
 <script>
@@ -446,26 +450,41 @@
 </script>
 
 <script>
-  $(document).ready(function () {
-    if ("geolocation" in navigator) {
-      alert("geolocation is available");
-    } else {
-      alert("geolocation IS NOT available");
-    }
+  
+  function AroundUserBranches() {
+        if (navigator.permissions) {
+            navigator.permissions.query({ name: 'geolocation' }).then(result => {
+                if (result.state === 'granted') {
+                    GetUserPosition();
+                } else if (result.state === 'prompt') {
+                    alert('لطفا GPS دستگاه را روشن کنید و مجوز دسترسی به لوکیشن را تایید نمایید');
+                    GetUserPosition();
+                } else if (result.state === 'denied') {
+                    alert('شما مجوز دسترسی به لوکیشن را نداده اید \n لطفا از قسمت تنظیمات مرورگر این مجوز را بدهید و با GPS روشن دوباره امتحان کنید');
+                }
+                result.onchange = event => {
+                    if (event.target.state === 'granted') {
+                        GetUserPosition();
+                    } else if (event.target.state === 'denied') {
 
-    navigator.permissions.query({ name: "geolocation" }).then(function (status) {
-      alert(status.state);
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          alert(pos.coords.latitude + ' , ' + pos.coords.longitude);
-        },
-        err => {
-          alert(err.code + ' : ' + err.message)
-        },
-        { timeout: 5000 }
-      );
-    });
-  });
+                    }
+                }
+            });
+        }
+    }
+    function GetUserPosition() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    alert(position.coords.latitude + ' , ' +position.coords.longitude);
+                },
+                function (error) {
+                    alert('خطا در پیدا کردن موقعیت فعلی شما \n لطفا از روشن بودن GPS دستگاه و مجوز دسترسی به لوکیشن در مرورگر مطمئن شوید و دوباره امتحان کنید');
+                }
+            );
+        }
+    }
+  
 </script>
 
 </html>
