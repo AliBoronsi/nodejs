@@ -463,13 +463,13 @@
                 } else if (result.state === 'denied') {
                     alert('شما مجوز دسترسی به لوکیشن را نداده اید \n لطفا از قسمت تنظیمات مرورگر این مجوز را بدهید و با GPS روشن دوباره امتحان کنید');
                 }
-                result.onchange = event => {
+                /*result.onchange = event => {
                     if (event.target.state === 'granted') {
                         GetUserPosition('onchange');
                     } else if (event.target.state === 'denied') {
 
                     }
-                }
+                }*/
             });
         }
     }
