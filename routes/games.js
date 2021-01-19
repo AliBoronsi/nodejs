@@ -4,6 +4,11 @@ var router = express.Router();
 const ResponseMaker = require('../Utils/ResponseMaker');
 const GameModel = require('../Model/game');
 
+router.get('/getClientIp', (req, res, next) => {
+  var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  res.json({ip});
+});
+
 /* GET users listing. */
 router.get('/getAll', (req, res, next) => {
   fs.readFile('Model/db.json', (err, data) => {
